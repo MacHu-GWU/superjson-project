@@ -4,6 +4,10 @@
 import logging
 
 logger = logging.getLogger("SuperJson")
+logger.setLevel(logging.DEBUG)
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+logger.addHandler(stream_handler)
 
 WARN_MSG = ("IMPLEMENT WARNING! SuperJson.{attr} is not a valid "
             "{method_type} method! It must have 'self' as first argument, "
@@ -19,4 +23,8 @@ def prt_console(message, verbose):
     """Print message to console, if ``verbose`` is True. 
     """
     if verbose:
-        logger.warning(message)
+        logger.info(message)
+
+
+if __name__ == "__main__":
+    prt_console("execute ...", True)

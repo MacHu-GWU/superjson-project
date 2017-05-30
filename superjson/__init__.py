@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
- 
-"""
-
-__version__ = "0.0.1"
-__short_description__ = "Super Json."
+__version__ = "0.0.2"
+__short_description__ = "Extendable json encode/decode library."
 __license__ = "MIT"
 
 try:

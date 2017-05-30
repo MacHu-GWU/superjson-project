@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 from pathlib import Path
 from superjson import SuperJson, get_class_name
 
@@ -24,11 +25,20 @@ class MySuperJson(SuperJson):
         return Path(dct["$" + class_name])
 
 json = MySuperJson()
-    
-p = Path(__file__)
-class_name = get_class_name(p)
-s = json.dumps(p)
-print(s)
-p1 = json.loads(s)
-assert p == p1
 
+
+if __name__ == "__main__":
+    p = Path(__file__)
+    class_name = get_class_name(p)
+    s = json.dumps(p)
+    print(s)
+    p1 = json.loads(s)
+    assert p == p1
+
+    import random
+    
+    data = {str(i): i for i in range(1000)}
+    s1 = json.dumps(data)
+    s2 = json.dumps(data, compress=True)
+    print(sys.getsizeof(s1))
+    print(sys.getsizeof(s2))

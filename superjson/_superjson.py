@@ -505,6 +505,7 @@ class SuperJson(object):
     def load_nparray(self, dct, class_name="numpy.ndarray"):
         return np.array(dct["$" + class_name])
 
+
 superjson = SuperJson()
 
 
@@ -641,4 +642,4 @@ if __name__ == "__main__":
 
         assert data == data1
 
-#     test_extend()
+    test_extend()
