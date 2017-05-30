@@ -185,7 +185,10 @@ class SuperJson(object):
         """
         # OrderedDict
         if isinstance(obj, OrderedDict):
-            return self._dump(obj)
+            try:
+                return self._dump(obj)
+            except TypeError:
+                return {k: self._json_convert(v) for k, v in iteritems(obj)}
 
         # nested dict
         elif isinstance(obj, dict):
