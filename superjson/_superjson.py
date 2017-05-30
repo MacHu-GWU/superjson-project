@@ -38,7 +38,7 @@ except:
     pass
 
 
-def get_class_name(obj=1):
+def get_class_name(obj):
     """Get class name in dot separete notation
 
         >>> from datetime import datetime
@@ -235,12 +235,16 @@ class SuperJson(object):
               **kwargs):
         """Dump any object into json string.
 
-        :param compress: default ``False. If True, then compress encoded string.
-        :type compress: bool
+        :param pretty: if True, dump json into pretty indent and sorted key
+          format.
+        :type pretty: bool
 
         :param float_precision: default ``None``, limit floats to 
           N-decimal points. 
         :type float_precision: integer
+
+        :param compress: default ``False. If True, then compress encoded string.
+        :type compress: bool
         """
         if pretty:
             indent = 4
@@ -270,7 +274,13 @@ class SuperJson(object):
               decompress=False,
               ignore_comments=False,
               **kwargs):
-        """
+        """load object from json encoded string.
+
+        :param decompress: default ``False. If True, then decompress string.
+        :type decompress: bool
+
+        :param ignore_comments: default ``False. If True, then ignore comments.
+        :type ignore_comments: bool
         """
         if decompress:
             s = compresslib.decompress(s, return_type="str")
@@ -303,6 +313,29 @@ class SuperJson(object):
              overwrite=False,
              verbose=True,
              **kwargs):
+        """Dump any object into file.
+
+        :param abspath: if ``*.json, *.js** then do regular dump. if ``*.gz``,
+          then perform compression.
+        :type abspath: str
+
+        :param pretty: if True, dump json into pretty indent and sorted key
+          format.
+        :type pretty: bool
+
+        :param float_precision: default ``None``, limit floats to 
+          N-decimal points. 
+        :type float_precision: integer
+
+        :param overwrite: default ``False``, If ``True``, when you dump to 
+          existing file, it silently overwrite it. If ``False``, an alert 
+          message is shown. Default setting ``False`` is to prevent overwrite 
+          file by mistake.
+        :type overwrite: boolean
+
+        :param verbose: default True, help-message-display trigger.
+        :type verbose: boolean
+        """
         prt_console("\nDump to '%s' ..." % abspath, verbose)
 
         is_compressed = is_compressed_json_file(abspath)
@@ -348,6 +381,23 @@ class SuperJson(object):
                   ensure_ascii=True,
                   verbose=True,
                   **kwargs):
+        """A stable version of :func:`SuperJson.dump`, this method will 
+        silently overwrite existing file.
+
+        There's a issue with :func:`SuperJson.dump`: If your program is 
+        interrupted while writing, you got an incomplete file, and you also 
+        lose the original file. So this method write json to a temporary file 
+        first, then rename to what you expect, and silently overwrite old one. 
+        This way can guarantee atomic write operation.
+
+        **中文文档**
+
+        在对文件进行写入时, 如果程序中断, 则会留下一个不完整的文件。如果使用了
+        覆盖式写入, 则我们即没有得到新文件, 同时也丢失了原文件。所以为了保证
+        写操作的原子性(要么全部完成, 要么全部都不完成), 更好的方法是: 首先将
+        文件写入一个临时文件中, 完成后再讲文件重命名, 覆盖旧文件。这样即使中途
+        程序被中断, 也仅仅是留下了一个未完成的临时文件而已, 不会影响原文件。
+        """
         abspath_temp = "%s.tmp" % abspath
         s = self.dump(
             obj,
@@ -369,7 +419,17 @@ class SuperJson(object):
              ignore_comments=False,
              verbose=True,
              **kwargs):
-        """
+        """load object from json file.
+
+        :param abspath: if ``*.json, *.js** then do regular dump. if ``*.gz``,
+          then perform decompression.
+        :type abspath: str
+
+        :param ignore_comments: default ``False. If True, then ignore comments.
+        :type ignore_comments: bool
+
+        :param verbose: default True, help-message-display trigger.
+        :type verbose: boolean
         """
         prt_console("\nLoad from '%s' ..." % abspath, verbose)
 
@@ -445,7 +505,6 @@ class SuperJson(object):
     def load_nparray(self, dct, class_name="numpy.ndarray"):
         return np.array(dct["$" + class_name])
 
-
 superjson = SuperJson()
 
 
@@ -488,7 +547,9 @@ if __name__ == "__main__":
 
     def test_numpy():
         data = {
-            "ndarray": np.array([[1, 2], [3, 4]]),
+            "ndarray_int": np.array([[1, 2], [3, 4]]),
+            "ndarray_float": np.array([[1.1, 2.2], [3.3, 4.4]]),
+            "ndarray_str": np.array([["a", "b"], ["c", "d"]]),
             "ndarray_datetime": np.array(
                 [datetime(2000, 1, 1), datetime(2010, 1, 1)]
             ),
@@ -497,9 +558,9 @@ if __name__ == "__main__":
 #         print(s)
         data1 = superjson.loads(s)
 #         pprint(data1)
-        assert np.array_equal(data["ndarray"], data1["ndarray"])
-        assert np.array_equal(data["ndarray_datetime"],
-                              data1["ndarray_datetime"])
+
+        for key in data:
+            assert np.array_equal(data[key], data1[key])
 
     test_numpy()
 

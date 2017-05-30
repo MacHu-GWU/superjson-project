@@ -10,6 +10,6 @@ __short_description__ = "Super Json."
 __license__ = "MIT"
 
 try:
-    from ._superjson import SuperJson, superjson as json
+    from ._superjson import SuperJson, superjson as json, get_class_name
 except Exception as e:
     pass

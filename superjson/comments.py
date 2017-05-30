@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
+This module can remove these two style ``// comment``, ``# comment`` comments
+from code.
+
 ---------- Revised BSD License ----------
 
 Copyright (c) 2017, Mark V.
