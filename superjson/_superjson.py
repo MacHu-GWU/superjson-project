@@ -9,23 +9,10 @@ import zlib
 import base64
 import shutil
 import inspect
-from six import PY2, PY3, add_metaclass, string_types, iteritems
 
 from collections import OrderedDict, deque
 from datetime import date, datetime
 from base64 import b64encode, b64decode
-from dateutil.parser import parse
-
-try:
-    from . import compresslib
-    from .comments import strip_comments
-    from .warning import logger, WARN_MSG, prt_console
-    from .util import write, read
-except:
-    from superjson import compresslib
-    from superjson.comments import strip_comments
-    from superjson.warning import logger, WARN_MSG, prt_console
-    from superjson.util import write, read
 
 try:
     import numpy as np
@@ -36,6 +23,21 @@ try:
     import pandas as pd
 except:
     pass
+
+try:
+    from . import compresslib
+    from .comments import strip_comments
+    from .warning import logger, WARN_MSG, prt_console
+    from .util import write, read
+    from .pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
+    from .pkg.dateutil.parser import parse
+except:
+    from superjson import compresslib
+    from superjson.comments import strip_comments
+    from superjson.warning import logger, WARN_MSG, prt_console
+    from superjson.util import write, read
+    from superjson.pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
+    from superjson.pkg.dateutil.parser import parse
 
 
 def get_class_name(obj):

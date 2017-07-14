@@ -3,10 +3,11 @@
 
 from pathlib_mate import Path
 
-dirpath_list = [
-    "superjson",
-    "tests",
-]
-for dirpath in dirpath_list:
-    p = Path(dirpath)
-    p.autopep8()
+p = Path(
+    Path(__file__).parent, 
+    Path(__file__).parent.basename.replace("-project", ""),
+)
+p.autopep8()
+
+p = Path("tests")
+p.autopep8()
