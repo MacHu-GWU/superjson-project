@@ -1,3 +1,13 @@
+# User Settings
+superjson_venv/
+superjson.egg-info/
+superjson-*/
+index.rst
+*.json
+*.js
+*.gz
+*.tmp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

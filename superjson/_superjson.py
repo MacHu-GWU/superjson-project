@@ -1,41 +1,36 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import io
 import os
 import json
 import time
-import zlib
-import base64
 import shutil
 import inspect
 
 from collections import OrderedDict, deque
-from datetime import date, datetime
+from datetime import datetime
 from base64 import b64encode, b64decode
 
 try:
     import numpy as np
-except:
+except ImportError:  # pragma: no cover
     pass
 
 try:
     import pandas as pd
-except:
+except ImportError:  # pragma: no cover
     pass
 
 try:
-    from . import compresslib
     from .comments import strip_comments
     from .warning import logger, WARN_MSG, prt_console
-    from .util import write, read
+    from .pkg import compresslib
     from .pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
     from .pkg.dateutil.parser import parse
-except:
-    from superjson import compresslib
+except:  # pragma: no cover
     from superjson.comments import strip_comments
     from superjson.warning import logger, WARN_MSG, prt_console
-    from superjson.util import write, read
+    from superjson.pkg import compresslib
     from superjson.pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
     from superjson.pkg.dateutil.parser import parse
 
@@ -134,10 +129,10 @@ class Meta(type):
         return klass
 
 
-if PY2:
-    bytes_class_name = "builtins.str"
+if PY2:  # pragma: no cover
+    bytes_class_name = "__builtin__.str"
     set_class_name = "__builtin__.set"
-elif PY3:
+elif PY3:  # pragma: no cover
     bytes_class_name = "builtins.bytes"
     set_class_name = "builtins.set"
 
@@ -167,7 +162,7 @@ def is_compressed_json_file(abspath):
 
 @add_metaclass(Meta)
 class SuperJson(object):
-    """A extensable json encoder/decoder. You can easily custom converter for 
+    """A extensable json encoder/decoder. You can easily custom converter for
     any types.
     """
     _dumpers = dict()
@@ -200,6 +195,10 @@ class SuperJson(object):
         elif isinstance(obj, (list, tuple)):
             return list((self._json_convert(v) for v in obj))
 
+        # float
+        elif isinstance(obj, float):
+            return float(json.encoder.FLOAT_REPR(obj))
+
         # single object
         try:
             return self._dump(obj)
@@ -207,9 +206,9 @@ class SuperJson(object):
             return obj
 
     def _object_hook1(self, dct):
-        """A function can convert dict data into object. 
+        """A function can convert dict data into object.
 
-        it's an O(1) implementation. 
+        it's an O(1) implementation.
         """
         # {"$class_name": obj_data}
         if len(dct) == 1:
@@ -220,7 +219,7 @@ class SuperJson(object):
             return dct
         return dct
 
-    def _object_hook2(self, dct):
+    def _object_hook2(self, dct):  # pragma: no cover
         """Another object hook implementation.
 
         it's an O(N) implementation.
@@ -244,8 +243,8 @@ class SuperJson(object):
           format.
         :type pretty: bool
 
-        :param float_precision: default ``None``, limit floats to 
-          N-decimal points. 
+        :param float_precision: default ``None``, limit floats to
+          N-decimal points.
         :type float_precision: integer
 
         :param compress: default ``False. If True, then compress encoded string.
@@ -328,13 +327,13 @@ class SuperJson(object):
           format.
         :type pretty: bool
 
-        :param float_precision: default ``None``, limit floats to 
-          N-decimal points. 
+        :param float_precision: default ``None``, limit floats to
+          N-decimal points.
         :type float_precision: integer
 
-        :param overwrite: default ``False``, If ``True``, when you dump to 
-          existing file, it silently overwrite it. If ``False``, an alert 
-          message is shown. Default setting ``False`` is to prevent overwrite 
+        :param overwrite: default ``False``, If ``True``, when you dump to
+          existing file, it silently overwrite it. If ``False``, an alert
+          message is shown. Default setting ``False`` is to prevent overwrite
           file by mistake.
         :type overwrite: boolean
 
@@ -386,13 +385,13 @@ class SuperJson(object):
                   ensure_ascii=True,
                   verbose=True,
                   **kwargs):
-        """A stable version of :func:`SuperJson.dump`, this method will 
+        """A stable version of :func:`SuperJson.dump`, this method will
         silently overwrite existing file.
 
-        There's a issue with :func:`SuperJson.dump`: If your program is 
-        interrupted while writing, you got an incomplete file, and you also 
-        lose the original file. So this method write json to a temporary file 
-        first, then rename to what you expect, and silently overwrite old one. 
+        There's a issue with :func:`SuperJson.dump`: If your program is
+        interrupted while writing, you got an incomplete file, and you also
+        lose the original file. So this method write json to a temporary file
+        first, then rename to what you expect, and silently overwrite old one.
         This way can guarantee atomic write operation.
 
         **中文文档**
@@ -441,8 +440,7 @@ class SuperJson(object):
         is_compressed = is_compressed_json_file(abspath)
 
         if not os.path.exists(abspath):
-            raise ValueError("'%s' doesn't exist." % abspath)
-            raise
+            raise EnvironmentError("'%s' doesn't exist." % abspath)
 
         st = time.clock()
 
@@ -465,36 +463,69 @@ class SuperJson(object):
         return obj
 
     def dump_bytes(self, obj, class_name=bytes_class_name):
+        """
+        ``btyes`` dumper.
+        """
         return {"$" + class_name: b64encode(obj).decode()}
 
     def load_bytes(self, dct, class_name=bytes_class_name):
+        """
+        ``btyes`` loader.
+        """
         return b64decode(dct["$" + class_name].encode())
 
     def dump_datetime(self, obj, class_name="datetime.datetime"):
+        """
+        ``datetime.datetime`` dumper.
+        """
         return {"$" + class_name: obj.isoformat()}
 
     def load_datetime(self, dct, class_name="datetime.datetime"):
+        """
+        ``datetime.datetime`` loader.
+        """
         return parse(dct["$" + class_name])
 
     def dump_date(self, obj, class_name="datetime.date"):
+        """
+        ``datetime.date`` dumper.
+        """
         return {"$" + class_name: str(obj)}
 
     def load_date(self, dct, class_name="datetime.date"):
+        """
+        ``datetime.date`` loader.
+        """
         return datetime.strptime(dct["$" + class_name], "%Y-%m-%d").date()
 
     def dump_set(self, obj, class_name=set_class_name):
+        """
+        ``set`` dumper.
+        """
         return {"$" + class_name: [self._json_convert(item) for item in obj]}
 
     def load_set(self, dct, class_name=set_class_name):
+        """
+        ``set`` loader.
+        """
         return set(dct["$" + class_name])
 
     def dump_deque(self, obj, class_name="collections.deque"):
+        """
+        ``collections.deque`` dumper.
+        """
         return {"$" + class_name: [self._json_convert(item) for item in obj]}
 
     def load_deque(self, dct, class_name="collections.deque"):
+        """
+        ``collections.deque`` loader.
+        """
         return deque(dct["$" + class_name])
 
     def dump_OrderedDict(self, obj, class_name="collections.OrderedDict"):
+        """
+        ``collections.OrderedDict`` dumper.
+        """
         return {
             "$" + class_name: [
                 (key, self._json_convert(value)) for key, value in iteritems(obj)
@@ -502,149 +533,22 @@ class SuperJson(object):
         }
 
     def load_OrderedDict(self, dct, class_name="collections.OrderedDict"):
+        """
+        ``collections.OrderedDict`` loader.
+        """
         return OrderedDict(dct["$" + class_name])
 
     def dump_nparray(self, obj, class_name="numpy.ndarray"):
+        """
+        ``numpy.ndarray`` dumper.
+        """
         return {"$" + class_name: self._json_convert(obj.tolist())}
 
     def load_nparray(self, dct, class_name="numpy.ndarray"):
+        """
+        ``numpy.ndarray`` loader.
+        """
         return np.array(dct["$" + class_name])
 
 
 superjson = SuperJson()
-
-
-if __name__ == "__main__":
-    from pprint import pprint
-
-    def test_common():
-        data = {
-            "int": 1,
-            "str": "Hello",
-            "bytes": "Hello".encode("utf-8"),
-            "date": date.today(),
-            "datetime": datetime.now(),
-            "set": set([
-                datetime(2000, 1, 1),
-                datetime(2000, 1, 2),
-            ]),
-            "deque": deque([
-                deque([1, 2]),
-                deque([3, 4]),
-            ]),
-            "ordereddict": OrderedDict([
-                ("b", OrderedDict([("b", 1), ("a", 2)])),
-                ("a", OrderedDict([("b", 1), ("a", 2)])),
-            ]),
-        }
-        s = superjson.dumps(data, indent=4)
-#         print(s)
-        data1 = superjson.loads(s)
-#         pprint(data1)
-        assert data == data1
-
-        s = superjson.dumps(data, compress=True)
-#         print(s)
-        data1 = superjson.loads(s, decompress=True)
-#         pprint(data1)
-        assert data == data1
-
-    test_common()
-
-    def test_numpy():
-        data = {
-            "ndarray_int": np.array([[1, 2], [3, 4]]),
-            "ndarray_float": np.array([[1.1, 2.2], [3.3, 4.4]]),
-            "ndarray_str": np.array([["a", "b"], ["c", "d"]]),
-            "ndarray_datetime": np.array(
-                [datetime(2000, 1, 1), datetime(2010, 1, 1)]
-            ),
-        }
-        s = superjson.dumps(data, indent=4)
-#         print(s)
-        data1 = superjson.loads(s)
-#         pprint(data1)
-
-        for key in data:
-            assert np.array_equal(data[key], data1[key])
-
-    test_numpy()
-
-    def test_pandas():
-        """
-
-        .. note:: Not supported yet!
-        """
-        data = {
-            "series": pd.Series([("a", datetime(2000, 1, 1)),
-                                 ("b", datetime(2010, 1, 1))]),
-        }
-#         s = superjson.dumps(data, indent=4)
-#         print(s)
-#         data1 = superjson.loads(s)
-#         pprint(data1)
-
-#     test_pandas()
-
-    def test_extend():
-        """Test for extend SuperJson for arbitrary custom types.
-        """
-        from sfm.nameddict import Base as Address
-
-        class User(object):
-
-            def __init__(self, id=None, name=None):
-                self.id = id
-                self.name = name
-
-            def __repr__(self):
-                return "User(id=%r, name=%r)" % (self.id, self.name)
-
-            def __eq__(self, other):
-                return self.id == other.id and self.name == other.name
-
-        Address_class_name = "sfm.nameddict.Base"
-        assert get_class_name(Address()) == "sfm.nameddict.Base"
-
-        User_class_name = "__main__.User"
-        assert get_class_name(User()) == "__main__.User"
-
-        class MySuperJson(SuperJson):
-
-            def dump_User(self, obj, class_name="__main__.User"):
-                key = "$" + class_name
-                return {key: {"id": obj.id, "name": obj.name}}
-
-            def load_User(self, dct, class_name="__main__.User"):
-                key = "$" + class_name
-                return User(**dct[key])
-
-            def dump_Address(self, obj, class_name="sfm.nameddict.Base"):
-                key = "$" + class_name
-                return {key: {"street": obj.street,
-                              "city": obj.city,
-                              "state": obj.state,
-                              "zipcode": obj.zipcode}}
-
-            def load_Address(self, dct, class_name="sfm.nameddict.Base"):
-                key = "$" + class_name
-                return Address(**dct[key])
-
-        js = MySuperJson()
-        data = {
-            "int": 1,
-            "str": "Hello",
-            "user": User(id=1, name="Alice"),
-            "address": Address(
-                street="123 Main St", city="New York", state="NY", zipcode="10001",
-            ),
-        }
-        s = js.dumps(data, indent=4)
-#         print(s)
-
-        data1 = js.loads(s)
-#         print(data1)
-
-        assert data == data1
-
-    test_extend()

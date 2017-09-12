@@ -1,13 +1,23 @@
 .. image:: https://travis-ci.org/MacHu-GWU/superjson-project.svg?branch=master
+    :target: https://travis-ci.org/MacHu-GWU/superjson-project?branch=master
+
+.. image:: https://codecov.io/gh/MacHu-GWU/superjson-project/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/MacHu-GWU/superjson-project
 
 .. image:: https://img.shields.io/pypi/v/superjson.svg
+    :target: https://pypi.python.org/pypi/superjson
 
 .. image:: https://img.shields.io/pypi/l/superjson.svg
+    :target: https://pypi.python.org/pypi/superjson
 
 .. image:: https://img.shields.io/pypi/pyversions/superjson.svg
+    :target: https://pypi.python.org/pypi/superjson
+
+.. image:: https://img.shields.io/badge/Star_Me_on_GitHub!--None.svg?style=social
+    :target: https://github.com/MacHu-GWU/superjson-project
 
 
-Welcome to superjson Documentation
+Welcome to ``superjson`` Documentation
 ===============================================================================
 Features:
 
@@ -18,17 +28,29 @@ Features:
 5. Advance file I/O utility method can prevent **overwrite**, **interruption**, and provide **auto compression by file extension**. `See example <Advance file I/O utility method_>`_.
 
 
-**Quick Links**
--------------------------------------------------------------------------------
-- `GitHub Homepage <https://github.com/MacHu-GWU/superjson-project>`_
-- `Online Documentation <https://pypi.python.org/pypi/superjson>`_
-- `PyPI download <https://pypi.python.org/pypi/superjson>`_
-- `Install <install_>`_
-- `Issue submit and feature request <https://github.com/MacHu-GWU/superjson-project/issues>`_
-- `API reference and source code <http://pythonhosted.org/superjson/py-modindex.html>`_
+Quick Links
+-----------
+
+- .. image:: https://img.shields.io/badge/Link-Document-red.svg
+      :target: http://www.wbh-doc.com.s3.amazonaws.com/superjson/index.html
+
+- .. image:: https://img.shields.io/badge/Link-API_Reference_and_Source_Code-red.svg
+      :target: API reference and source code <http://www.wbh-doc.com.s3.amazonaws.com/superjson/py-modindex.html
+
+- .. image:: https://img.shields.io/badge/Link-Install-red.svg
+      :target: `install`_
+
+- .. image:: https://img.shields.io/badge/Link-GitHub-blue.svg
+      :target: https://github.com/MacHu-GWU/superjson-project
+
+- .. image:: https://img.shields.io/badge/Link-Submit_Issue_and_Feature_Request-blue.svg
+      :target: https://github.com/MacHu-GWU/superjson-project/issues
+
+- .. image:: https://img.shields.io/badge/Link-Download-blue.svg
+      :target: https://pypi.python.org/pypi/superjson#downloads
 
 
-Other data types
+Built-in Support for many popular data type
 -------------------------------------------------------------------------------
 Original `json <https://docs.python.org/3/library/json.html>`_ module doesn't support ``date``, ``datetime``, ``set``, ``OrderedDict``, ``deque``, ``numpy.ndarray``, but ``superjson`` does! **If you want me to add support for other data type**, please `submit here <https://github.com/MacHu-GWU/superjson-project/issues>`_.
 
@@ -37,6 +59,7 @@ Original `json <https://docs.python.org/3/library/json.html>`_ module doesn't su
     >>> from collections import OrderedDict, deque
     >>> from datetime import date, datetime
     >>> from superjson import json
+    >>> import numpy as np
 
     >>> data = {
     ...     "int": 1,
@@ -56,82 +79,15 @@ Original `json <https://docs.python.org/3/library/json.html>`_ module doesn't su
     ...         ("b", OrderedDict([("b", 1), ("a", 2)])),
     ...         ("a", OrderedDict([("b", 1), ("a", 2)])),
     ...     ]),
+    ...     "array": np.array([
+    ...         [1, 2],
+    ...         [1.1, 2.2],
+    ...         ["a", "b"],
+    ...         [datetime.now(), datetime.now()],
+    ...     ]),
     ... }
 
     >>> json.dumps(data, pretty=True)
-    {
-        "bytes": {
-            "$builtins.bytes": "SGVsbG8="
-        },
-        "date": {
-            "$datetime.date": "2010-01-01"
-        },
-        "datetime": {
-            "$datetime.datetime": "2020-01-01T18:30:00.000500"
-        },
-        "deque": {
-            "$collections.deque": [
-                {
-                    "$collections.deque": [
-                        1,
-                        2
-                    ]
-                },
-                {
-                    "$collections.deque": [
-                        3,
-                        4
-                    ]
-                }
-            ]
-        },
-        "int": 1,
-        "ordereddict": {
-            "$collections.OrderedDict": [
-                [
-                    "b",
-                    {
-                        "$collections.OrderedDict": [
-                            [
-                                "b",
-                                1
-                            ],
-                            [
-                                "a",
-                                2
-                            ]
-                        ]
-                    }
-                ],
-                [
-                    "a",
-                    {
-                        "$collections.OrderedDict": [
-                            [
-                                "b",
-                                1
-                            ],
-                            [
-                                "a",
-                                2
-                            ]
-                        ]
-                    }
-                ]
-            ]
-        },
-        "set": {
-            "$builtins.set": [
-                {
-                    "$datetime.datetime": "2000-01-02T00:00:00"
-                },
-                {
-                    "$datetime.datetime": "2000-01-01T00:00:00"
-                }
-            ]
-        },
-        "str": "Hello"
-    }
 
 
 Extend
@@ -186,7 +142,7 @@ Example:
 
 Comment
 -------------------------------------------------------------------------------
-You can add comments to json file, and ``superjson`` can still read it!
+You can add comments to your json file, and ``superjson`` can still read it!
 
 .. code-block:: json
 
@@ -244,6 +200,8 @@ If your program is interrupted while writing, you got an incomplete file, and **
     # it first write to "data.gz.tmp", when it's done, overwrite the
     # original "data.gz" file
     >>> json.safe_dump(data, "data.gz")
+
+More options for ``dump``, ``safe_dump``, ``load`` can be found `HERE <http://www.wbh-doc.com.s3.amazonaws.com/superjson/_superjson.html#superjson._superjson.SuperJson.dump>`_.
 
 
 .. _install:
