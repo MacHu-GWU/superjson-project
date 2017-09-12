@@ -144,7 +144,7 @@ Comment
 -------------------------------------------------------------------------------
 You can add comments to your json file, and ``superjson`` can still read it!
 
-.. code-block:: json
+.. code-block:: python
 
     >>> s= \
     """
