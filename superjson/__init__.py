@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 __short_description__ = "Extendable json encode/decode library."
 __license__ = "MIT"
 __author__ = "Sanhe Hu"
