@@ -49,7 +49,7 @@ You can extend your Encoder/Decoder in this way:
 
 1. Make your ``MyJson`` inherit from ``superjson.SuperJson``.
 2. Define encode method and decode method in this name convention ``dump_xxx``, ``load_xxx``.
-3. dumper method has to dump object to a json serializable dictionary, and use "$<class_name>" as the key.
+3. dumper method has to dump object to a json serializable dictionary, and use ``$<class_name>`` as the key.
 4. dumper and loader method must have a second argument ``class_name``, it must have a default value equals to the class name you want to support. there's a method ``get_class_name`` can help you to find out what is the correct class name.
 
 Example:
@@ -154,7 +154,7 @@ If your program is interrupted while writing, you got an incomplete file, and **
     # original "data.gz" file
     >>> json.safe_dump(data, "data.gz")
 
-More options for ``dump``, ``safe_dump``, ``load`` can be found `HERE <http://www.wbh-doc.com.s3.amazonaws.com/superjson/_superjson.html#superjson._superjson.SuperJson.dump>`_.
+More options for ``dump``, ``safe_dump``, ``load`` can be found :meth:`HERE <superjson._superjson.SuperJson.dump>`.
 
 
 .. articles::
