@@ -19,8 +19,8 @@ WARN_MSG = ("IMPLEMENT WARNING! SuperJson.{attr} is not a valid "
             "class_name='builtins.set'):")
 
 
-def prt_console(message, verbose):
-    """Print message to console, if ``verbose`` is True. 
+def prt_console(message, verbose):  # pragma: no cover
+    """Print message to console, if ``verbose`` is True.
     """
     if verbose:
         logger.info(message)

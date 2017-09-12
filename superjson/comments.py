@@ -49,7 +49,7 @@ def strip_comment_line_with_symbol(line, start):
         total += count
         if total % 2 == 0:
             return start.join(parts[:nr + 1]).rstrip()
-    else:
+    else:  # pragma: no cover
         return line.rstrip()
 
 
@@ -65,21 +65,3 @@ def strip_comments(string, comment_symbols=frozenset(('#', '//'))):
         for symbol in comment_symbols:
             lines[k] = strip_comment_line_with_symbol(lines[k], start=symbol)
     return '\n'.join(lines)
-
-
-if __name__ == "__main__":
-    import json
-
-    s = \
-        """
-    {
-        "a": 1, // this is comment 1
-        "b": 2, # this is comment 2
-        // this is comment 3
-        # this is comment 4
-        "c": 3
-    }
-    """.strip()
-
-    s = strip_comments(s)
-    assert json.loads(s) == {"a": 1, "b": 2, "c": 3}
