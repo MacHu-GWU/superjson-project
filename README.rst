@@ -21,11 +21,52 @@ Welcome to ``superjson`` Documentation
 ===============================================================================
 Features:
 
-1. Support for ``date``, ``datetime``, ``set``, ``OrderedDict``, ``deque``, ``numpy.ndarray``, that the original `json <https://docs.python.org/3/library/json.html>`_ module can not serialize.
-2. Easy to extend to support any custom data type.
-3. Allow ``// double slash started comments``, ``# Pound key started comments`` style comment in json file (Good for human/machine readable config file).
-4. Provide a ``compress`` option to reduce the data size.
-5. Advance file I/O utility method can prevent **overwrite**, **interruption**, and provide **auto compression by file extension**.
+1. **Support** for ``date``, ``datetime``, ``set``, ``OrderedDict``, ``deque``, ``numpy.ndarray``, that the original `json <https://docs.python.org/3/library/json.html>`_ module can not serialize.
+2. **Easy to extend to support any custom data type**, `see how <https://superjson.readthedocs.io/index.html#extend>`_.
+3. Allow ``// double slash started comments``, ``# Pound key started comments`` style **comment** in json file (Good for human/machine readable config file).
+4. Use ``.gz`` for file extension, data will be **automatically compressed**.
+5. **Atomic Write is ensured**.
+
+
+Usage:
+
+.. code-block:: python
+
+    >>> from collections import OrderedDict, deque
+    >>> from datetime import date, datetime
+    >>> from superjson import json
+    >>> import numpy as np
+
+    >>> data = {
+    ...     "int": 1,
+    ...     "str": "Hello",
+    ...     "bytes": "Hello".encode("utf-8"),
+    ...     "date": date(2010, 1, 1),
+    ...     "datetime": datetime(2020, 1, 1, 18, 30, 0, 500),
+    ...     "set": set([
+    ...         datetime(2000, 1, 1),
+    ...         datetime(2000, 1, 2),
+    ...     ]),
+    ...     "deque": deque([
+    ...         deque([1, 2]),
+    ...         deque([3, 4]),
+    ...     ]),
+    ...     "ordereddict": OrderedDict([
+    ...         ("b", OrderedDict([("b", 1), ("a", 2)])),
+    ...         ("a", OrderedDict([("b", 1), ("a", 2)])),
+    ...     ]),
+    ...     "array": np.array([
+    ...         [1, 2],
+    ...         [1.1, 2.2],
+    ...         ["a", "b"],
+    ...         [datetime.now(), datetime.now()],
+    ...     ]),
+    ... }
+
+    >>> json.dumps(data, pretty=True)
+    ...
+    >>> json.dump(data, "data.gz", overwrite=True) # atomic write ensured
+    ...
 
 
 Quick Links
