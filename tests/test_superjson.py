@@ -4,36 +4,48 @@
 from __future__ import unicode_literals
 import pytest
 from pytest import raises
-from superjson import json
-from superjson.pkg.six import PY3
+from superjson._superjson import (
+    is_compressed_json_file,
+    superjson as json,
+)
 
 import os
 from all import data
 
-file_list = [
-    "data1.json", "data2.json", "data3.json",
-    "data1.gz", "data2.gz", "data3.gz",
-]
+
+def abspath_of(basename):
+    return os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        basename,
+    )
+
+
+def remove_all():
+    test_dir = os.path.dirname(os.path.abspath(__file__))
+    for basename in os.listdir(test_dir):
+        ext = os.path.splitext(basename)[1]
+        if ext.lower() in [".json", ".gz"]:
+            abspath = os.path.join(test_dir, basename)
+            try:
+                os.remove(abspath)
+            except:
+                pass
 
 
 def setup_module(module):
-    """setup any state specific to the execution of the given module."""
-    for path in file_list:
-        try:
-            os.remove(path)
-        except:
-            pass
+    remove_all()
 
 
 def teardown_module(module):
-    """teardown any state that was previously setup with a setup_module
-    method.
-    """
-    for path in file_list:
-        try:
-            os.remove(path)
-        except:
-            pass
+    remove_all()
+
+
+def test_is_compressed_json_file():
+    assert is_compressed_json_file("data.json") is False
+    assert is_compressed_json_file("data.js") is False
+    assert is_compressed_json_file("data.gz") is True
+    with raises(ValueError):
+        assert is_compressed_json_file("data.txt") is False
 
 
 class Test_dumps_loads(object):
@@ -97,38 +109,33 @@ class Test_dumps_loads(object):
             pass
 
 
-class Test_dump_and_safe_dump_and_load(object):
+class TestSuperjson(object):
     def test_pretty(self):
-        json.dump(data, "data1.json", pretty=True, verbose=False)
-        data1 = json.load("data1.json", verbose=False)
+        json.dump(data, abspath_of("data1.json"), pretty=True,
+                  overwrite=False, verbose=False)
+        data1 = json.load(abspath_of("data1.json"), verbose=False)
         assert data == data1
 
-        json.safe_dump(data, "data2.json", pretty=True, verbose=False)
-        data2 = json.load("data2.json", verbose=False)
+        json.dump(data, abspath_of("data2.json"), pretty=True,
+                  overwrite=True, verbose=False)
+        data2 = json.load(abspath_of("data2.json"), verbose=False)
         assert data == data2
 
     def test_auto_compress(self):
-        json.dump(data, "data1.gz", pretty=True, verbose=False)
-        data1 = json.load("data1.gz", verbose=False)
+        json.dump(data, abspath_of("data1.gz"), pretty=True, verbose=False)
+        data1 = json.load(abspath_of("data1.gz"), verbose=False)
         assert data == data1
 
-        json.safe_dump(data, "data2.gz", pretty=True, verbose=False)
-        data2 = json.load("data2.gz", verbose=False)
-        assert data == data2
-
-        with raises(ValueError):
-            json.safe_dump(data, "data.txt", verbose=False)
-
     def test_overwrite(self):
-        json.dump(data, "test.json", overwrite=False, verbose=False)
+        json.dump(data, abspath_of("test.json"), overwrite=True, verbose=False)
+        json.dump("Hello World!", abspath_of("test.json"), overwrite=True, verbose=False)
         # I don't know why in pytest it doesn't work
-        # with open("test.json", "rb") as f:
-        #     content = f.read().decode("utf-8")
-        #     assert content.startswith("Please")
+        s = json.load(abspath_of("test.json"), verbose=False)
+        assert s == "Hello World!"
 
-    def test_not_exists(self):
+    def test_load_from_not_exist_file(self):
         with raises(EnvironmentError):
-            json.load("not-exists.json", verbose=False)
+            json.load(abspath_of("not-exists.json"), verbose=False)
 
 
 if __name__ == "__main__":

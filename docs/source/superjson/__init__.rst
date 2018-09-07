@@ -10,7 +10,7 @@ sub packages and modules
 .. toctree::
    :maxdepth: 1
 
+    warning <warning>
     _superjson <_superjson>
     comments <comments>
-    warning <warning>
     

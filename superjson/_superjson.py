@@ -27,12 +27,21 @@ try:
     from .pkg import compresslib
     from .pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
     from .pkg.dateutil.parser import parse
+    from .pkg.atomicwrites import atomic_write
 except:  # pragma: no cover
     from superjson.comments import strip_comments
     from superjson.warning import logger, WARN_MSG, prt_console
     from superjson.pkg import compresslib
     from superjson.pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
     from superjson.pkg.dateutil.parser import parse
+    from superjson.pkg.atomicwrites import atomic_write
+
+if PY2:  # pragma: no cover
+    getfullargspec = inspect.getargspec
+elif PY3:  # pragma: no cover
+    getfullargspec = inspect.getfullargspec
+else:  # pragma: no cover
+    raise EnvironmentError
 
 
 def get_class_name(obj):
@@ -55,13 +64,13 @@ def get_class_name_from_dumper_loader_method(func):
     Because the third argument of dumper, loader method must be the class name.
 
     """
-    return inspect.getargspec(func).defaults[0]
+    return getfullargspec(func).defaults[0]
 
 
 def is_dumper_method(func):
     """Test if it is a dumper method.
     """
-    if inspect.getargspec(func).args == ["self", "obj", "class_name"]:
+    if getfullargspec(func).args == ["self", "obj", "class_name"]:
         return True
     else:
         return False
@@ -70,7 +79,7 @@ def is_dumper_method(func):
 def is_loader_method(func):
     """Test if it is a loader method.
     """
-    if inspect.getargspec(func).args == ["self", "dct", "class_name"]:
+    if getfullargspec(func).args == ["self", "dct", "class_name"]:
         return True
     else:
         return False
@@ -150,8 +159,6 @@ def is_compressed_json_file(abspath):
         is_compressed = False
     elif ext == ".gz":
         is_compressed = True
-    elif ext == ".tmp":
-        return is_compressed_json_file(fname)
     else:
         raise ValueError(
             "'%s' is not a valid json file. "
@@ -344,8 +351,8 @@ class SuperJson(object):
 
         is_compressed = is_compressed_json_file(abspath)
 
-        if os.path.exists(abspath):
-            if not overwrite:
+        if not overwrite:
+            if os.path.exists(abspath):  # pragma: no cover
                 prt_console(
                     "    Stop! File exists and overwrite is not allowed",
                     verbose,
@@ -361,61 +368,20 @@ class SuperJson(object):
             pretty=pretty,
             float_precision=float_precision,
             ensure_ascii=ensure_ascii,
-            # use uncompressed string, and directly write to file
-            compress=False,
+            compress=False,  # use uncompressed string, and directly write to file
             **kwargs
         )
 
-        with open(abspath, "wb") as f:
+        with atomic_write(abspath, mode="wb", overwrite=True) as f:
             if is_compressed:
                 f.write(compresslib.compress(s, return_type="bytes"))
             else:
                 f.write(s.encode("utf-8"))
 
-        prt_console("    Complete! Elapse %.6f sec." % (time.clock() - st),
-                    verbose)
-        return s
-
-    def safe_dump(self, obj,
-                  abspath,
-                  indent=None,
-                  sort_keys=None,
-                  pretty=False,
-                  float_precision=None,
-                  ensure_ascii=True,
-                  verbose=True,
-                  **kwargs):
-        """A stable version of :func:`SuperJson.dump`, this method will
-        silently overwrite existing file.
-
-        There's a issue with :func:`SuperJson.dump`: If your program is
-        interrupted while writing, you got an incomplete file, and you also
-        lose the original file. So this method write json to a temporary file
-        first, then rename to what you expect, and silently overwrite old one.
-        This way can guarantee atomic write operation.
-
-        **中文文档**
-
-        在对文件进行写入时, 如果程序中断, 则会留下一个不完整的文件。如果使用了
-        覆盖式写入, 则我们即没有得到新文件, 同时也丢失了原文件。所以为了保证
-        写操作的原子性(要么全部完成, 要么全部都不完成), 更好的方法是: 首先将
-        文件写入一个临时文件中, 完成后再讲文件重命名, 覆盖旧文件。这样即使中途
-        程序被中断, 也仅仅是留下了一个未完成的临时文件而已, 不会影响原文件。
-        """
-        abspath_temp = "%s.tmp" % abspath
-        s = self.dump(
-            obj,
-            abspath_temp,
-            indent=indent,
-            sort_keys=sort_keys,
-            pretty=pretty,
-            float_precision=float_precision,
-            ensure_ascii=ensure_ascii,
-            overwrite=True,
-            verbose=verbose,
-            **kwargs
+        prt_console(
+            "    Complete! Elapse %.6f sec." % (time.clock() - st),
+            verbose,
         )
-        shutil.move(abspath_temp, abspath)
         return s
 
     def load(self, abspath,
