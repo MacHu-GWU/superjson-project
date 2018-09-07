@@ -2,7 +2,7 @@ Release and Version History
 ===========================
 
 
-0.0.10 (TODO)
+0.0.11 (TODO)
 ~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -11,6 +11,13 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+0.0.10 (2018-09-06)
+~~~~~~~~~~~~~~~~~~~
+**Miscellaneous**
+
+- update docs.
 
 
 0.0.9 (2018-09-06)
