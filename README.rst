@@ -17,6 +17,9 @@
 .. image:: https://img.shields.io/pypi/pyversions/superjson.svg
     :target: https://pypi.python.org/pypi/superjson
 
+.. image:: https://img.shields.io/pypi/dm/superjson.svg
+    :alt: PyPI - Downloads
+
 .. image:: https://img.shields.io/badge/STAR_Me_on_GitHub!--None.svg?style=social
     :target: https://github.com/MacHu-GWU/superjson-project
 
@@ -142,7 +145,7 @@ Extend
     # or you can just do
     >>> user_class_name = "xxx.model.User"
 
-4. Define encode method and decode method in this name convention ``dump_xxx``, ``load_xxx``. You just need to manually transform the instance to a SuperJson serializable object, a combination of dict, list, tuple, set, str, integer, float, datetime, bytes, etc. And just construct the instance from the SuperJson serializable object we just defined. In the ``User`` example, we dump a user to ``{"id": user.id, "name": user.name}``, and load a user from ``User(**dict_data)``.
+4. Define encode method and decode method in this name convention ``dump_xxx``, ``load_xxx``. You just need to manually **transform the instance to a SuperJson serializable object**, a combination of dict, list, tuple, set, str, integer, float, datetime, bytes, etc. And **just construct the instance from the SuperJson serializable object we just defined**. In the ``User`` example, we dump a user to ``{"id": user.id, "name": user.name}``, and load a user from ``User(**dict_data)``.
 
 .. code-block:: python
 
@@ -193,7 +196,7 @@ Extend
 
 Comment
 -------------------------------------------------------------------------------
-You can add comments to your json file, and ``superjson`` can still read it!
+You can add comments to your json file, and ``superjson`` **can still read it**!
 
 .. code-block:: python
 
@@ -220,10 +223,10 @@ Compress your json file is easy.
     >>> data = {str(i): i for i in range(1000)}
 
     # Compress when dump to string
-    >>> s = json.dumps(data, compress=True)
+    >>> text = json.dumps(data, compress=True)
 
     # Decompress when load from compressed string
-    >>> data1 = json.loads(s, decompress=True)
+    >>> data1 = json.loads(text, decompress=True)
 
     # Auto compress when dump to file
     >>> json.dump(data, "data.gz") # "data.json" will not been compressed
@@ -232,12 +235,12 @@ Compress your json file is easy.
     >>> json.load("data.gz")
 
     # compare
-    >>> s1 = json.dumps(data)
-    >>> s2 = json.dumps(data, compress=True)
-    >>> sys.getsizeof(s1)
+    >>> text1 = json.dumps(data)
+    >>> text2 = json.dumps(data, compress=True)
+    >>> sys.getsizeof(text1)
     11829
 
-    >>> sys.getsizeof(s2)
+    >>> sys.getsizeof(text2)
     5809
 
 
@@ -250,7 +253,7 @@ If your program is interrupted while writing, you got an incomplete file, and **
     >>> data = dict(a=1, b=2, c=3)
     # it first write to "data.gz.tmp", when it's done, overwrite the
     # original "data.gz" file
-    >>> json.dump(data, "data.gz", overwrite=True)
+    >>> json.dump(data, abspath="data.gz", overwrite=True)
 
 More options for ``dump``, ``load`` can be found :meth:`HERE <superjson._superjson.SuperJson.dump>`.
 
