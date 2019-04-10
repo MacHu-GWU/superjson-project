@@ -4,7 +4,7 @@ Release and Version History
 ===========================
 
 
-0.0.12 (TODO)
+0.0.13 (TODO)
 ~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -15,13 +15,22 @@ Release and Version History
 **Miscellaneous**
 
 
-0.0.11 (TODO)
+0.0.12 (TODO)
+~~~~~~~~~~~~~~~~~~
+**Miscellaneous**
+
+update README
+
+
+0.0.11 (2019-04-09)
 ~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
+- support ``pathlib.Path``, ``pathlib2.Path``, and ``pathlib_mate.Path``
+
 **Minor Improvements**
 
-**Bugfixes**
+- better document
 
 **Miscellaneous**
 
