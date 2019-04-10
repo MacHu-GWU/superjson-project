@@ -1,8 +1,6 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import pytest
-from pytest import raises, approx
 from superjson import SuperJson, get_class_name
 
 
@@ -30,7 +28,7 @@ class MySuperJson(SuperJson):
         key = "$" + class_name
         return User(**dct[key])
 
-    # pytest will change the module from __main__ to test_extend
+    # pytest will change the module from __main__ to test_extend, implement both case
     def dump_test_extend_User(self, obj, class_name="test_extend.User"):
         key = "$" + class_name
         return {key: {"id": obj.id, "name": obj.name}}
@@ -40,14 +38,14 @@ class MySuperJson(SuperJson):
         return User(**dct[key])
 
     # other method
-    def dump_someting(self):
+    def dump_someting(self): # will prompt warning
         pass
 
-    def load_something(self):
+    def load_something(self): # will prompt warning
         pass
 
-    dump_this = None
-    load_this = None
+    dump_this = None # will prompt warning
+    load_this = None # will prompt warning
 
 
 json = MySuperJson()

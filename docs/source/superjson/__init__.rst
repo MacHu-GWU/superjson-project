@@ -8,9 +8,11 @@ sub packages and modules
 ------------------------
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
+    _version <_version>
     warning <warning>
     _superjson <_superjson>
+    helper <helper>
     comments <comments>
     

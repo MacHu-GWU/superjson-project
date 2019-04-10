@@ -1,2 +1,8 @@
+pathlib_mate    # autopep8 your code
+twine>=1.5.0    # make distribution archive
+
+numpy
+pathlib2
 pathlib_mate
-twine>=1.5.0
+
+jsonpickle

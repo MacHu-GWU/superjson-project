@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
@@ -106,7 +105,38 @@ class Test_dumps_loads(object):
             for key in data:
                 assert np.array_equal(data[key], data1[key])
         except ImportError:
-            pass
+            return
+
+    def test_pathlib_path(self):
+        try:
+            from pathlib import Path
+        except ImportError:
+            try:
+                from pathlib2 import Path
+            except:
+                return
+
+        data = {
+            "a_pathlib_path": Path(__file__)
+        }
+        s = json.dumps(data, indent=4)
+        data1 = json.loads(s)
+        assert data == data1
+        assert data["a_pathlib_path"].exists()
+
+    def test_pathlib_mate_path(self):
+        try:
+            from pathlib_mate import PathCls as Path
+        except ImportError:
+            return
+
+        data = {
+            "a_pathlib_mate_path": Path(__file__)
+        }
+        s = json.dumps(data, indent=4)
+        data1 = json.loads(s)
+        assert data == data1
+        assert data["a_pathlib_mate_path"].exists()
 
 
 class TestSuperjson(object):

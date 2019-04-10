@@ -1,3 +1,7 @@
-pytest>=3.2.3
-pytest-cov
+# dependencies for test
+pytest==3.2.3       # test framework
+pytest-cov==2.5.1   # coverage test
+
 numpy
+pathlib2
+pathlib_mate

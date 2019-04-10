@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
@@ -22,17 +21,19 @@ except ImportError:  # pragma: no cover
     pass
 
 try:
+    from .helper import get_class_name
     from .comments import strip_comments
     from .warning import logger, WARN_MSG, prt_console
     from .pkg import compresslib
-    from .pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
+    from .pkg.six import PY2, PY3, add_metaclass, string_types, binary_type, iteritems
     from .pkg.dateutil.parser import parse
     from .pkg.atomicwrites import atomic_write
 except:  # pragma: no cover
+    from superjson.helper import get_class_name
     from superjson.comments import strip_comments
     from superjson.warning import logger, WARN_MSG, prt_console
     from superjson.pkg import compresslib
-    from superjson.pkg.six import PY2, PY3, add_metaclass, string_types, iteritems
+    from superjson.pkg.six import PY2, PY3, add_metaclass, string_types, binary_type, iteritems
     from superjson.pkg.dateutil.parser import parse
     from superjson.pkg.atomicwrites import atomic_write
 
@@ -44,25 +45,10 @@ else:  # pragma: no cover
     raise EnvironmentError
 
 
-def get_class_name(obj):
-    """Get class name in dot separete notation
-
-        >>> from datetime import datetime
-        >>> obj = datetime.datetime(2000, 1, 1)
-        >>> get_class_name(obj) -> "datetime.datetime"
-
-        >>> from collections import deque
-        >>> obj = deque([1, 2, 3])
-        >>> get_class_name(obj) -> "collections.deque"
-    """
-    return obj.__class__.__module__ + "." + obj.__class__.__name__
-
-
 def get_class_name_from_dumper_loader_method(func):
     """Get default value of ``class_name`` argument.
 
     Because the third argument of dumper, loader method must be the class name.
-
     """
     return getfullargspec(func).defaults[0]
 
@@ -109,6 +95,7 @@ class Meta(type):
                     dump_or_load="load",
                 )
 
+                # link dumper / loader method with the full classname
                 # find dumper method,
                 if attr.startswith("dump_"):
                     try:
@@ -138,12 +125,8 @@ class Meta(type):
         return klass
 
 
-if PY2:  # pragma: no cover
-    bytes_class_name = "__builtin__.str"
-    set_class_name = "__builtin__.set"
-elif PY3:  # pragma: no cover
-    bytes_class_name = "builtins.bytes"
-    set_class_name = "builtins.set"
+bytes_class_name = get_class_name(binary_type())
+set_class_name = get_class_name(set())
 
 
 def is_compressed_json_file(abspath):
@@ -168,8 +151,9 @@ def is_compressed_json_file(abspath):
 
 
 @add_metaclass(Meta)
-class SuperJson(object):
-    """A extensable json encoder/decoder. You can easily custom converter for
+class BaseSuperJson(object):
+    """
+    A extensable json encoder/decoder. You can easily custom converter for
     any types.
     """
     _dumpers = dict()
@@ -428,6 +412,8 @@ class SuperJson(object):
 
         return obj
 
+
+class SupportBuiltInDataType(object):
     def dump_bytes(self, obj, class_name=bytes_class_name):
         """
         ``btyes`` dumper.
@@ -504,17 +490,74 @@ class SuperJson(object):
         """
         return OrderedDict(dct["$" + class_name])
 
-    def dump_nparray(self, obj, class_name="numpy.ndarray"):
+
+numpy_ndarray_class_name = "numpy.ndarray"
+
+
+class SupportNumpyArray(object):
+    def dump_nparray(self, obj, class_name=numpy_ndarray_class_name):
         """
         ``numpy.ndarray`` dumper.
         """
         return {"$" + class_name: self._json_convert(obj.tolist())}
 
-    def load_nparray(self, dct, class_name="numpy.ndarray"):
+    def load_nparray(self, dct, class_name=numpy_ndarray_class_name):
         """
         ``numpy.ndarray`` loader.
         """
         return np.array(dct["$" + class_name])
+
+
+pathlib_path_class_name = "pathlib.Path"
+try:
+    from pathlib import Path
+
+    pathlib_path_class_name = get_class_name(Path(__file__))
+except ImportError:
+    from pathlib2 import Path
+
+    pathlib_path_class_name = get_class_name(Path(__file__))
+
+
+pathlib_mate_path_class_name = "pathlib_mate.pathlib2.Path"
+try:
+    from pathlib_mate import PathCls
+
+    pathlib_mate_path_class_name = get_class_name(PathCls(__file__))
+except ImportError:
+    pass
+
+
+class SupportPathlib(object):
+    def dump_pathlib_path(self, obj, class_name=pathlib_path_class_name):
+        """
+        ``pathlib.Path`` or ``pathlib2.Path`` dumper.
+        """
+        return {"$" + class_name: str(obj)}
+
+    def load_pathlib_path(self, dct, class_name=pathlib_path_class_name):
+        """
+        ``pathlib.Path`` or ``pathlib2.Path`` loader.
+        """
+        return Path(dct["$" + class_name])
+
+    def dump_pathlib_mate_path(self, obj, class_name=pathlib_mate_path_class_name):
+        """
+        ``pathlib_mate.PathCLs`` dumper.
+        """
+        return {"$" + class_name: str(obj)}
+
+    def load_pathlib_mate_path(self, dct, class_name=pathlib_mate_path_class_name):
+        """
+        ``pathlib_mate.PathCLs`` loader.
+        """
+        return PathCls(dct["$" + class_name])
+
+
+class SuperJson(BaseSuperJson,
+                SupportBuiltInDataType,
+                SupportNumpyArray,
+                SupportPathlib): pass
 
 
 superjson = SuperJson()

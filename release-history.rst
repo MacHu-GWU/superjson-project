@@ -1,5 +1,18 @@
+.. _release_history:
+
 Release and Version History
 ===========================
+
+
+0.0.12 (TODO)
+~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+**Minor Improvements**
+
+**Bugfixes**
+
+**Miscellaneous**
 
 
 0.0.11 (TODO)
@@ -11,6 +24,8 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+- apply ``cookiecutter-pygitrepo==0.0.2`` skeleton.
 
 
 0.0.10 (2018-09-06)
