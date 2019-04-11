@@ -513,9 +513,12 @@ try:
 
     pathlib_path_class_name = get_class_name(Path(__file__))
 except ImportError:
-    from pathlib2 import Path
+    try:
+        from pathlib2 import Path
 
-    pathlib_path_class_name = get_class_name(Path(__file__))
+        pathlib_path_class_name = get_class_name(Path(__file__))
+    except ImportError:
+        pass
 
 
 pathlib_mate_path_class_name = "pathlib_mate.pathlib2.Path"

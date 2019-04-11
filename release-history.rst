@@ -4,7 +4,7 @@ Release and Version History
 ===========================
 
 
-0.0.13 (TODO)
+0.0.14 (TODO)
 ~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -15,7 +15,14 @@ Release and Version History
 **Miscellaneous**
 
 
-0.0.12 (TODO)
+0.0.13 (2019-04-10)
+~~~~~~~~~~~~~~~~~~
+**Bugfixes**
+
+fix import error when pathlib2 not installed in python2.7
+
+
+0.0.12 (2019-04-09)
 ~~~~~~~~~~~~~~~~~~
 **Miscellaneous**
 
