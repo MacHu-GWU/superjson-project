@@ -5,7 +5,7 @@
 # and s3://<s3-bucket-name>/<dir-prefix>/<package-name>/latest
 
 
-dir_here="$( cd "$(dirname "$0")" ; pwd -P )"
+dir_here="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 dir_bin="$(dirname "${dir_here}")"
 dir_project_root=$(dirname "${dir_bin}")
 
