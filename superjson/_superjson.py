@@ -342,7 +342,7 @@ class BaseSuperJson(object):
                 )
                 return
 
-        st = time.clock()
+        st = time.process_time()
 
         s = self.dumps(
             obj,
@@ -362,7 +362,7 @@ class BaseSuperJson(object):
                 f.write(s.encode("utf-8"))
 
         prt_console(
-            "    Complete! Elapse %.6f sec." % (time.clock() - st),
+            "    Complete! Elapse %.6f sec." % (time.process_time() - st),
             verbose,
         )
         return s
@@ -391,7 +391,7 @@ class BaseSuperJson(object):
         if not os.path.exists(abspath):
             raise EnvironmentError("'%s' doesn't exist." % abspath)
 
-        st = time.clock()
+        st = time.process_time()
 
         with open(abspath, "rb") as f:
             if is_compressed:
@@ -406,7 +406,7 @@ class BaseSuperJson(object):
             ignore_comments=ignore_comments,
         )
 
-        prt_console("    Complete! Elapse %.6f sec." % (time.clock() - st),
+        prt_console("    Complete! Elapse %.6f sec." % (time.process_time() - st),
                     verbose)
 
         return obj
