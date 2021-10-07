@@ -1,1 +1,7 @@
+# release to PyPI
+twine
+wheel
+
 # dependencies for serializer / deserializer
+python-dateutil
+
