@@ -56,7 +56,7 @@ Welcome to ``superjson`` Documentation
 Features:
 
 1. **Support** for ``date``, ``datetime``, ``set``, ``OrderedDict``, ``deque``, that the original `json <https://docs.python.org/3/library/json.html>`_ module can not serialize.
-2. **Easy to extend to support any custom data type**, `SEE HOW <extend_>`_.
+2. **Easy to extend to support any custom data type**, `SEE HOW <https://superjson.readthedocs.io/#extend>`_.
 3. Allow ``// double slash started comments``, ``# Pound key started comments`` style **comment** in json file (Good for human/machine readable config file).
 4. Use ``.gz`` for file extension, data will be **automatically compressed**.
 5. **Atomic Write is ensured**, operation of overwriting an existing json file is atomic.
