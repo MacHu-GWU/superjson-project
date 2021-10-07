@@ -87,57 +87,6 @@ class Test_dumps_loads(object):
         assert len(s1) > len(s2)
         assert json.loads(s2, decompress=True) == data
 
-    def test_numpy(self):
-        try:
-            import numpy as np
-            from datetime import datetime
-
-            data = {
-                "ndarray_int": np.array([[1, 2], [3, 4]]),
-                "ndarray_float": np.array([[1.1, 2.2], [3.3, 4.4]]),
-                "ndarray_str": np.array([["a", "b"], ["c", "d"]]),
-                "ndarray_datetime": np.array(
-                    [datetime(2000, 1, 1), datetime(2010, 1, 1)]
-                ),
-            }
-            s = json.dumps(data, indent=4)
-            data1 = json.loads(s)
-            for key in data:
-                assert np.array_equal(data[key], data1[key])
-        except ImportError:
-            return
-
-    def test_pathlib_path(self):
-        try:
-            from pathlib import Path
-        except ImportError:
-            try:
-                from pathlib2 import Path
-            except:
-                return
-
-        data = {
-            "a_pathlib_path": Path(__file__)
-        }
-        s = json.dumps(data, indent=4)
-        data1 = json.loads(s)
-        assert data == data1
-        assert data["a_pathlib_path"].exists()
-
-    def test_pathlib_mate_path(self):
-        try:
-            from pathlib_mate import PathCls as Path
-        except ImportError:
-            return
-
-        data = {
-            "a_pathlib_mate_path": Path(__file__)
-        }
-        s = json.dumps(data, indent=4)
-        data1 = json.loads(s)
-        assert data == data1
-        assert data["a_pathlib_mate_path"].exists()
-
 
 class TestSuperjson(object):
     def test_pretty(self):

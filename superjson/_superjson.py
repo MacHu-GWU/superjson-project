@@ -25,7 +25,6 @@ try:
     from .warning import logger, WARN_MSG, prt_console
     from .pkg import compresslib
     from .pkg.six import PY2, PY3, add_metaclass, string_types, binary_type, iteritems
-    from .pkg.dateutil.parser import parse
     from .pkg.atomicwrites import atomic_write
 except:  # pragma: no cover
     from superjson.helper import get_class_name
@@ -33,7 +32,6 @@ except:  # pragma: no cover
     from superjson.warning import logger, WARN_MSG, prt_console
     from superjson.pkg import compresslib
     from superjson.pkg.six import PY2, PY3, add_metaclass, string_types, binary_type, iteritems
-    from superjson.pkg.dateutil.parser import parse
     from superjson.pkg.atomicwrites import atomic_write
 
 if PY2:  # pragma: no cover
@@ -131,9 +129,9 @@ set_class_name = get_class_name(set())
 def is_compressed_json_file(abspath):
     """Test a file is a valid json file.
 
-    - *.json: uncompressed, utf-8 encode json file
-    - *.js: uncompressed, utf-8 encode json file
-    - *.gz: compressed, utf-8 encode json file
+    - ``*.json``: uncompressed, utf-8 encode json file
+    - ``*.js``: uncompressed, utf-8 encode json file
+    - ``*.gz``: compressed, utf-8 encode json file
     """
     abspath = abspath.lower()
     fname, ext = os.path.splitext(abspath)
@@ -229,15 +227,15 @@ class BaseSuperJson(object):
               **kwargs):
         """Dump any object into json string.
 
-        :param pretty: if True, dump json into pretty indent and sorted key
-          format.
+        :param pretty: if ``True``, dump json into pretty indent and sorted key
+            format.
         :type pretty: bool
 
         :param float_precision: default ``None``, limit floats to
-          N-decimal points.
+            N-decimal points.
         :type float_precision: integer
 
-        :param compress: default ``False. If True, then compress encoded string.
+        :param compress: default ``False``. If True, then compress encoded string.
         :type compress: bool
         """
         if pretty:
@@ -270,10 +268,10 @@ class BaseSuperJson(object):
               **kwargs):
         """load object from json encoded string.
 
-        :param decompress: default ``False. If True, then decompress string.
+        :param decompress: default ``False``. If True, then decompress string.
         :type decompress: bool
 
-        :param ignore_comments: default ``False. If True, then ignore comments.
+        :param ignore_comments: default ``False``. If True, then ignore comments.
         :type ignore_comments: bool
         """
         if decompress:
@@ -309,7 +307,7 @@ class BaseSuperJson(object):
              **kwargs):
         """Dump any object into file.
 
-        :param abspath: if ``*.json, *.js** then do regular dump. if ``*.gz``,
+        :param abspath: if ``*.json, *.js**`` then do regular dump. if ``*.gz``,
           then perform compression.
         :type abspath: str
 
@@ -435,6 +433,12 @@ class SupportBuiltInDataType(object):
         """
         ``datetime.datetime`` loader.
         """
+        try:
+            from dateutil.parser import parse
+        except ImportError: # pragma: no cover
+            msg = ("You need to install `python-dateutil` to support load/dump for datetime type")
+            logger.info(msg)
+            raise
         return parse(dct["$" + class_name])
 
     def dump_date(self, obj, class_name="datetime.date"):
@@ -490,76 +494,8 @@ class SupportBuiltInDataType(object):
         return OrderedDict(dct["$" + class_name])
 
 
-numpy_ndarray_class_name = "numpy.ndarray"
-
-
-class SupportNumpyArray(object):
-    def dump_nparray(self, obj, class_name=numpy_ndarray_class_name):
-        """
-        ``numpy.ndarray`` dumper.
-        """
-        return {"$" + class_name: self._json_convert(obj.tolist())}
-
-    def load_nparray(self, dct, class_name=numpy_ndarray_class_name):
-        """
-        ``numpy.ndarray`` loader.
-        """
-        return np.array(dct["$" + class_name])
-
-
-pathlib_path_class_name = "pathlib.Path"
-try:
-    from pathlib import Path
-
-    pathlib_path_class_name = get_class_name(Path(__file__))
-except ImportError:
-    try:
-        from pathlib2 import Path
-
-        pathlib_path_class_name = get_class_name(Path(__file__))
-    except ImportError:
-        pass
-
-
-pathlib_mate_path_class_name = "pathlib_mate.pathlib2.Path"
-try:
-    from pathlib_mate import PathCls
-
-    pathlib_mate_path_class_name = get_class_name(PathCls(__file__))
-except ImportError:
-    pass
-
-
-class SupportPathlib(object):
-    def dump_pathlib_path(self, obj, class_name=pathlib_path_class_name):
-        """
-        ``pathlib.Path`` or ``pathlib2.Path`` dumper.
-        """
-        return {"$" + class_name: str(obj)}
-
-    def load_pathlib_path(self, dct, class_name=pathlib_path_class_name):
-        """
-        ``pathlib.Path`` or ``pathlib2.Path`` loader.
-        """
-        return Path(dct["$" + class_name])
-
-    def dump_pathlib_mate_path(self, obj, class_name=pathlib_mate_path_class_name):
-        """
-        ``pathlib_mate.PathCLs`` dumper.
-        """
-        return {"$" + class_name: str(obj)}
-
-    def load_pathlib_mate_path(self, dct, class_name=pathlib_mate_path_class_name):
-        """
-        ``pathlib_mate.PathCLs`` loader.
-        """
-        return PathCls(dct["$" + class_name])
-
-
 class SuperJson(BaseSuperJson,
-                SupportBuiltInDataType,
-                SupportNumpyArray,
-                SupportPathlib): pass
+                SupportBuiltInDataType): pass
 
 
 superjson = SuperJson()
