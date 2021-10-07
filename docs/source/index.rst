@@ -33,13 +33,6 @@ Original `json <https://docs.python.org/3/library/json.html>`_ module doesn't su
     ...         ("b", OrderedDict([("b", 1), ("a", 2)])),
     ...         ("a", OrderedDict([("b", 1), ("a", 2)])),
     ...     ]),
-    ...     "path": Path(__file__),
-    ...     "array": np.array([
-    ...         [1, 2],
-    ...         [1.1, 2.2],
-    ...         ["a", "b"],
-    ...         [datetime.now(), datetime.now()],
-    ...     ]),
     ... }
 
     >>> json.dumps(data, pretty=True)

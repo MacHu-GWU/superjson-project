@@ -4,7 +4,6 @@ Release and Version History
 ==============================================================================
 
 
-
 1.0.2 (TODO)
 ------------------------------------------------------------------------------
 
@@ -21,11 +20,17 @@ Release and Version History
 ------------------------------------------------------------------------------
 **Features and Improvements**
 
+- Drop built in Object hook for ``pahtlib.Path``, ``numpy.array``, ``pandas.DataFrame``.
+- Remove unnecessary embedded packages.
+- Drop support for Python2.7, support Python3.6 + only
+
 **Minor Improvements**
 
 **Bugfixes**
 
 **Miscellaneous**
+
+- API become stable
 
 
 0.0.13 (2019-04-10)
