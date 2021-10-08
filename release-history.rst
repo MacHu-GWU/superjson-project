@@ -16,7 +16,7 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.1 (TODO)
+1.0.1 (2021-10-07)
 ------------------------------------------------------------------------------
 **Features and Improvements**
 
@@ -30,7 +30,7 @@ Release and Version History
 
 **Miscellaneous**
 
-- API become stable
+- First API stable release
 
 
 0.0.13 (2019-04-10)
