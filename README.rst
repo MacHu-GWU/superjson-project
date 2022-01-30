@@ -26,7 +26,7 @@
 ------
 
 
-.. image:: https://img.shields.io/badge/Link-Document-blue.svg
+.. image:: https://img.shields.io/badge/Link-Document-orange.svg
       :target: https://superjson.readthedocs.io/index.html
 
 .. image:: https://img.shields.io/badge/Link-API-blue.svg

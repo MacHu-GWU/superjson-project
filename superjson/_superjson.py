@@ -9,67 +9,43 @@ from collections import OrderedDict, deque
 from datetime import datetime
 from base64 import b64encode, b64decode
 
-try:
-    import numpy as np
-except ImportError:  # pragma: no cover
-    pass
-
-try:
-    import pandas as pd
-except ImportError:  # pragma: no cover
-    pass
-
-try:
-    from .helper import get_class_name
-    from .comments import strip_comments
-    from .warning import logger, WARN_MSG, prt_console
-    from .pkg import compresslib
-    from .pkg.six import PY2, PY3, add_metaclass, string_types, binary_type, iteritems
-    from .pkg.atomicwrites import atomic_write
-except:  # pragma: no cover
-    from superjson.helper import get_class_name
-    from superjson.comments import strip_comments
-    from superjson.warning import logger, WARN_MSG, prt_console
-    from superjson.pkg import compresslib
-    from superjson.pkg.six import PY2, PY3, add_metaclass, string_types, binary_type, iteritems
-    from superjson.pkg.atomicwrites import atomic_write
-
-if PY2:  # pragma: no cover
-    getfullargspec = inspect.getargspec
-elif PY3:  # pragma: no cover
-    getfullargspec = inspect.getfullargspec
-else:  # pragma: no cover
-    raise EnvironmentError
+from .helper import get_class_name
+from .comments import strip_comments
+from .warning import logger, WARN_MSG, prt_console
+from .pkg import compresslib
+from .pkg.atomicwrites import atomic_write
 
 
 def get_class_name_from_dumper_loader_method(func):
-    """Get default value of ``class_name`` argument.
+    """
+    Get default value of ``class_name`` argument.
 
     Because the third argument of dumper, loader method must be the class name.
     """
-    return getfullargspec(func).defaults[0]
+    return inspect.getfullargspec(func).defaults[0]
 
 
 def is_dumper_method(func):
-    """Test if it is a dumper method.
     """
-    if getfullargspec(func).args == ["self", "obj", "class_name"]:
+    Test if it is a dumper method.
+    """
+    if inspect.getfullargspec(func).args == ["self", "obj", "class_name"]:
         return True
     else:
         return False
 
 
 def is_loader_method(func):
-    """Test if it is a loader method.
     """
-    if getfullargspec(func).args == ["self", "dct", "class_name"]:
+    Test if it is a loader method.
+    """
+    if inspect.getfullargspec(func).args == ["self", "dct", "class_name"]:
         return True
     else:
         return False
 
 
 class Meta(type):
-
     def __new__(cls, name, bases, attrs):
         klass = super(Meta, cls).__new__(cls, name, bases, attrs)
 
@@ -122,7 +98,7 @@ class Meta(type):
         return klass
 
 
-bytes_class_name = get_class_name(binary_type())
+bytes_class_name = get_class_name(bytes())
 set_class_name = get_class_name(set())
 
 
@@ -147,8 +123,7 @@ def is_compressed_json_file(abspath):
     return is_compressed
 
 
-@add_metaclass(Meta)
-class BaseSuperJson(object):
+class BaseSuperJson(metaclass=Meta):
     """
     A extensable json encoder/decoder. You can easily custom converter for
     any types.
@@ -173,11 +148,11 @@ class BaseSuperJson(object):
             try:
                 return self._dump(obj)
             except TypeError:
-                return {k: self._json_convert(v) for k, v in iteritems(obj)}
+                return {k: self._json_convert(v) for k, v in obj.items()}
 
         # nested dict
         elif isinstance(obj, dict):
-            return {k: self._json_convert(v) for k, v in iteritems(obj)}
+            return {k: self._json_convert(v) for k, v in obj.items()}
 
         # list or tuple
         elif isinstance(obj, (list, tuple)):
@@ -200,7 +175,7 @@ class BaseSuperJson(object):
         """
         # {"$class_name": obj_data}
         if len(dct) == 1:
-            for key, value in iteritems(dct):
+            for key, value in dct.items():
                 class_name = key[1:]
                 if class_name in self._loaders:
                     return self._loaders[class_name](self, dct)
@@ -217,14 +192,17 @@ class BaseSuperJson(object):
                 return loader(self, dct)
         return dct
 
-    def dumps(self, obj,
-              indent=None,
-              sort_keys=None,
-              pretty=False,
-              float_precision=None,
-              ensure_ascii=True,
-              compress=False,
-              **kwargs):
+    def dumps(
+        self,
+        obj,
+        indent: bool = None,
+        sort_keys: bool = None,
+        pretty: bool = False,
+        float_precision: int = None,
+        ensure_ascii: bool = True,
+        compress: bool = False,
+        **kwargs
+    ):
         """Dump any object into json string.
 
         :param pretty: if ``True``, dump json into pretty indent and sorted key
@@ -233,7 +211,7 @@ class BaseSuperJson(object):
 
         :param float_precision: default ``None``, limit floats to
             N-decimal points.
-        :type float_precision: integer
+        :type float_precision: int
 
         :param compress: default ``False``. If True, then compress encoded string.
         :type compress: bool
@@ -261,11 +239,14 @@ class BaseSuperJson(object):
 
         return s
 
-    def loads(self, s,
-              object_hook=None,
-              decompress=False,
-              ignore_comments=False,
-              **kwargs):
+    def loads(
+        self,
+        s: str,
+        object_hook: bool = None,
+        decompress: bool = False,
+        ignore_comments: bool = False,
+        **kwargs,
+    ):
         """load object from json encoded string.
 
         :param decompress: default ``False``. If True, then decompress string.
@@ -295,16 +276,19 @@ class BaseSuperJson(object):
 
         return obj
 
-    def dump(self, obj,
-             abspath,
-             indent=None,
-             sort_keys=None,
-             pretty=False,
-             float_precision=None,
-             ensure_ascii=True,
-             overwrite=False,
-             verbose=True,
-             **kwargs):
+    def dump(
+        self,
+        obj,
+        abspath: str,
+        indent: bool = None,
+        sort_keys: bool = None,
+        pretty: bool = False,
+        float_precision: int = None,
+        ensure_ascii: bool = True,
+        overwrite: bool = False,
+        verbose: bool = True,
+        **kwargs
+    ):
         """Dump any object into file.
 
         :param abspath: if ``*.json, *.js**`` then do regular dump. if ``*.gz``,
@@ -317,7 +301,7 @@ class BaseSuperJson(object):
 
         :param float_precision: default ``None``, limit floats to
           N-decimal points.
-        :type float_precision: integer
+        :type float_precision: int
 
         :param overwrite: default ``False``, If ``True``, when you dump to
           existing file, it silently overwrite it. If ``False``, an alert
@@ -350,7 +334,7 @@ class BaseSuperJson(object):
             float_precision=float_precision,
             ensure_ascii=ensure_ascii,
             compress=False,  # use uncompressed string, and directly write to file
-            **kwargs
+            **kwargs,
         )
 
         with atomic_write(abspath, mode="wb", overwrite=True) as f:
@@ -365,11 +349,14 @@ class BaseSuperJson(object):
         )
         return s
 
-    def load(self, abspath,
-             object_hook=None,
-             ignore_comments=False,
-             verbose=True,
-             **kwargs):
+    def load(
+        self,
+        abspath: str,
+        object_hook=None,
+        ignore_comments: bool = False,
+        verbose: bool = True,
+        **kwargs
+    ):
         """load object from json file.
 
         :param abspath: if ``*.json, *.js** then do regular dump. if ``*.gz``,
@@ -402,6 +389,7 @@ class BaseSuperJson(object):
             object_hook=object_hook,
             decompress=False,
             ignore_comments=ignore_comments,
+            **kwargs,
         )
 
         prt_console("    Complete! Elapse %.6f sec." % (time.process_time() - st),
@@ -409,8 +397,9 @@ class BaseSuperJson(object):
 
         return obj
 
-
-class SupportBuiltInDataType(object):
+    # ----------------------------------------------------------------------
+    # Support built in data type
+    # ----------------------------------------------------------------------
     def dump_bytes(self, obj, class_name=bytes_class_name):
         """
         ``btyes`` dumper.
@@ -435,7 +424,7 @@ class SupportBuiltInDataType(object):
         """
         try:
             from dateutil.parser import parse
-        except ImportError: # pragma: no cover
+        except ImportError:  # pragma: no cover
             msg = ("You need to install `python-dateutil` to support load/dump for datetime type")
             logger.info(msg)
             raise
@@ -483,7 +472,7 @@ class SupportBuiltInDataType(object):
         """
         return {
             "$" + class_name: [
-                (key, self._json_convert(value)) for key, value in iteritems(obj)
+                (key, self._json_convert(value)) for key, value in obj.items()
             ]
         }
 
@@ -494,8 +483,7 @@ class SupportBuiltInDataType(object):
         return OrderedDict(dct["$" + class_name])
 
 
-class SuperJson(BaseSuperJson,
-                SupportBuiltInDataType): pass
+class SuperJson(BaseSuperJson): pass
 
 
 superjson = SuperJson()

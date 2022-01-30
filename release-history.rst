@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-1.0.2 (TODO)
+1.0.3 (TODO)
 ------------------------------------------------------------------------------
 
 **Features and Improvements**
@@ -14,6 +14,20 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+1.0.2 (2022-01-30)
+------------------------------------------------------------------------------
+
+**Minor Improvements**
+
+- remove unnecessary ``numpy``, ``pandas`` import to avoid long import time.
+
+**Bugfixes**
+
+**Miscellaneous**
+
+- use typehint notation
 
 
 1.0.1 (2021-10-07)
