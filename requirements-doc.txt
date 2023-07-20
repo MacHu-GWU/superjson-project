@@ -12,4 +12,4 @@ rstobj==0.0.7                           # generate list table from data
 
 # Other
 
-Pygments==2.9.0                         # live RestructuredText preview
+Pygments==2.15.0                         # live RestructuredText preview
